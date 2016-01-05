@@ -171,7 +171,7 @@ begin
     
 end ;*/
 
-create function FindKomisiu4(p_student int, p_odbor int, p_zameranie int, p_semester VARCHAR2, p_rok VARCHAR2) return boolean is
+/*create function FindKomisiu4(p_student int, p_odbor int, p_zameranie int, p_semester VARCHAR2, p_rok VARCHAR2) return boolean is
 
 l_result boolean:= false;
 
@@ -195,7 +195,10 @@ begin
     
     return l_result;
     
-end ;
+end ;*/
+
+
+
 
 
 
