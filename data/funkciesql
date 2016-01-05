@@ -1,0 +1,202 @@
+/*create or replace function GetZaciatok(p_zaciatok date, p_koniec date, p_delay int)
+return date is
+
+  l_sysdate date;
+  
+
+begin
+
+  l_sysdate :=  TO_CHAR(p_zaciatok + p_dealy/(24*60) , 'HH24:MI:SS');
+  if l_sysdate < p_koniec Then
+  return l_sysdate;
+  else 
+  return null;
+  end if;
+
+end;
+
+
+create or replace function GetZaciatok(p_zaciatok date, p_koniec date, p_delay int)
+return date is
+
+  l_sysdate date;
+  
+
+begin
+
+  l_sysdate :=  TO_CHAR(p_zaciatok + p_dealy/(24*60) , 'HH24:MI:SS');
+  if l_sysdate < p_koniec Then
+  return l_sysdate;
+  else 
+  return null;
+  end if;
+
+end;*/
+
+/*
+create or replace function ZapisStudenta(p_student int, p_komisia int, p_cas_od date, p_cas_do date, p_semester Varchar2, p_rok Varchar2)
+return boolean is
+
+
+ l_result boolean := false;
+ sql_stmt varchar2(1000);
+ l_lastDate date;
+ 
+
+
+  begin
+   
+    
+    begin
+      select z.CAS_KONCA into l_lastDate from ZAP_STUDENTI z
+      where z.ID = (select max(zs.ID) from ZAP_STUDENTI zs
+      where zs.ROK = p_rok and zs.SEMESTER = p_semester
+      and zs.ID_KOMISIE = p_komisia);
+      EXCEPTION
+      WHEN NO_DATA_FOUND THEN
+        l_lastDate := NULL;
+    END;
+    
+    
+    sql_stmt:='insert into zap_studenti(id_komisie, cas_zacatia, kolo, os_cislo)';
+    sql_stmt:= sql_stmt ||' values(:1,:2,:3,:4) '; 
+    
+        if l_lastDate is NULL THEN
+          
+          EXECUTE IMMEDIATE sql_stmt USING p_komisia, p_cas_od, 1, p_student;
+          
+        else 
+          
+           EXECUTE IMMEDIATE sql_stmt USING p_komisia, l_lastDate, 1, p_student;
+        
+        end if;
+    	  dbms_output.put_line(to_char(l_lastDate, 'HH24:MI:SS') || 'cas konca');
+        l_result := true;   
+    
+    
+  return l_result;
+end;*/
+
+
+/*create or replace function GetStart(p_student int, p_zaciatok date, p_koniec date)
+return date is
+ 
+ l_lastDate date;
+ l_obhajoba int;
+ 
+
+
+  begin
+    begin
+    select sp.obhajoba into l_obhajoba from st_program sp
+    join student st on (sp.ST_ODBOR = st.st_odbor AND sp.ST_ZAMERANIE = st.st_zameranie)
+    where st.os_cislo = p_student;
+     EXCEPTION
+      WHEN NO_DATA_FOUND THEN
+      /*ak som nic nenasiel porad vraciam null*/
+      /*  l_lastDate := NULL;    
+    
+    end;
+    
+    
+     l_lastDate := p_zaciatok + l_obhajoba/(24*60);
+     if to_char(l_lastDate, 'HH24:MI') > '11:30' THEN
+      l_lastDate := p_zaciatok + 60/(24*60);
+    end if;
+    
+    
+    
+    
+   
+    
+    
+  return l_lastDate;
+end;
+*/
+
+/*create function FindKomisiu2(p_student int, p_os_veduci int, p_odbor int, p_zameranie int, p_semester VARCHAR2, p_rok VARCHAR2) return boolean is
+
+l_result boolean:= false;
+
+Cursor cur1 is 
+select uc.ID_KOMISIE as komisia, tm.CAS_ZACIATIA as od, tm.CAS_KONCA as do from UCITEL u
+join UCITELIA uc on(u.OS_CISLO = uc.OS_CISLO)
+join KOMISIE km on (uc.ID_KOMISIE = km.ID_KOMISIE)
+join TERMINY tm on (km.ID_TERMIN = tm.ID_TERMIN)
+where u.OS_CISLO = p_os_veduci and uc.ID_FUN IN (2,3)
+and u.ST_ODBOR = p_odbor and u.ST_ZAMERANIE = p_zameranie;
+begin 
+  
+  FOR ou_rec IN cur1 LOOP
+  
+    
+	  dbms_output.put_line(ou_rec.komisia || ' ' ||  ou_rec.od || ' ' || ou_rec.do );
+    if ZapisStudenta(p_student, ou_rec.komisia, ou_rec.od, ou_rec.do, p_semester, p_rok) then 
+      l_result := true;  
+      Exit; 
+    end if;
+      
+  END LOOP; 
+    
+    return l_result;
+    
+end ;
+*/
+
+/*create function FindKomisiu3(p_student int, p_os_tutor int, p_odbor int, p_zameranie int, p_semester VARCHAR2, p_rok VARCHAR2) return boolean is
+
+l_result boolean:= false;
+
+Cursor cur1 is 
+select uc.ID_KOMISIE as komisia, tm.CAS_ZACIATIA as od, tm.CAS_KONCA as do from UCITEL u
+join UCITELIA uc on(u.OS_CISLO = uc.OS_CISLO)
+join KOMISIE km on (uc.ID_KOMISIE = km.ID_KOMISIE)
+join TERMINY tm on (km.ID_TERMIN = tm.ID_TERMIN)
+where u.OS_CISLO = p_os_tutor and uc.ID_FUN IN (2,3)
+and u.ST_ODBOR = p_odbor and u.ST_ZAMERANIE = p_zameranie;
+begin 
+  
+  FOR ou_rec IN cur1 LOOP
+  
+    
+	  dbms_output.put_line(ou_rec.komisia || ' ' ||  ou_rec.od || ' ' || ou_rec.do );
+    if ZapisStudenta(p_student, ou_rec.komisia, ou_rec.od, ou_rec.do, p_semester, p_rok) then 
+      l_result := true;  
+      Exit; 
+    end if;
+      
+  END LOOP; 
+    
+    return l_result;
+    
+end ;*/
+
+create function FindKomisiu4(p_student int, p_odbor int, p_zameranie int, p_semester VARCHAR2, p_rok VARCHAR2) return boolean is
+
+l_result boolean:= false;
+
+Cursor cur1 is 
+select uc.ID_KOMISIE as komisia, tm.CAS_ZACIATIA as od, tm.CAS_KONCA as do from UCITELIA uc 
+join KOMISIE km on (uc.ID_KOMISIE = km.ID_KOMISIE)
+join TERMINY tm on (km.ID_TERMIN = tm.ID_TERMIN)
+where uc.ST_ODBOR = p_odbor and uc.ST_ZAMERANIE = p_zameranie;
+begin 
+  
+  FOR ou_rec IN cur1 LOOP
+  
+    
+	  dbms_output.put_line(ou_rec.komisia || ' ' ||  ou_rec.od || ' ' || ou_rec.do );
+    if ZapisStudenta(p_student, ou_rec.komisia, ou_rec.od, ou_rec.do, p_semester, p_rok) then 
+      l_result := true;  
+      Exit; 
+    end if;
+      
+  END LOOP; 
+    
+    return l_result;
+    
+end ;
+
+
+
+

@@ -1,0 +1,18 @@
+CREATE SEQUENCE zap_st_seq_inc_id
+MINVALUE 0
+MAXVALUE 99999999
+START WITH 0
+INCREMENT BY 1
+NOCACHE;
+
+CREATE OR REPLACE TRIGGER zap_stud_triger_inc_id
+BEFORE INSERT ON zap_studenti
+FOR EACH ROW
+DECLARE
+  next_id NUMBER;
+BEGIN
+  IF :new.id IS NULL OR :new.id = 0 THEN
+    SELECT zap_st_seq_inc_id.nextval INTO next_id FROM dual;
+    :new.id := next_id;
+  END IF;
+END;
